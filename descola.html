@@ -1,0 +1,1034 @@
+<meta charset="utf-8">
+<title>Descola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --paper:#FBF2E9;        /* concha quente */
+    --card:#FFFFFF;
+    --card-soft:#FDF8F2;
+    --ink:#46323F;          /* ameixa profunda */
+    --ink-soft:#7A6570;
+    --ink-on-pastel:#46323F;
+    --rose:#E9ADB6;         /* rosa Mendl's */
+    --rose-deep:#D68894;
+    --mint:#A9CDB8;
+    --mint-deep:#7FAE92;
+    --butter:#F3D489;
+    --butter-deep:#DDB85E;
+    --sky:#A9C7DE;
+    --sky-deep:#7FA6C6;
+    --coral:#E0876F;
+    --line:#EAD9CC;
+    --shadow:0 4px 0 rgba(70,50,63,.10);
+    --focus:#3E6FB0;
+    --radius:22px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#2C2230;
+      --card:#3A2D3E;
+      --card-soft:#453648;
+      --ink:#F6E9E0;
+      --ink-soft:#C9B4BE;
+      --rose:#D89AA5;
+      --mint:#93BCA4;
+      --butter:#E3C173;
+      --sky:#8FB2CF;
+      --line:#57465B;
+      --shadow:0 4px 0 rgba(0,0,0,.25);
+      --focus:#9EC3F0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#2C2230;
+    --card:#3A2D3E;
+    --card-soft:#453648;
+    --ink:#F6E9E0;
+    --ink-soft:#C9B4BE;
+    --rose:#D89AA5;
+    --mint:#93BCA4;
+    --butter:#E3C173;
+    --sky:#8FB2CF;
+    --line:#57465B;
+    --shadow:0 4px 0 rgba(0,0,0,.25);
+    --focus:#9EC3F0;
+  }
+
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Atkinson Hyperlegible", "Verdana", sans-serif;
+    font-size:19px;
+    line-height:1.55;
+  }
+  h1,h2,h3,.display{
+    font-family:"Fredoka","Atkinson Hyperlegible",sans-serif;
+    text-wrap:balance;
+    margin:0;
+  }
+
+  /* foco visível GRANDE — essencial para varredura/teclado */
+  :focus-visible{
+    outline:5px solid var(--focus);
+    outline-offset:3px;
+    border-radius:14px;
+  }
+  button{
+    font-family:inherit;
+    color:var(--ink-on-pastel);
+    cursor:pointer;
+    border:none;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation; /* sem zoom por duplo-toque */
+  }
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
+
+  /* ============ MARQUISE (cabeçalho) ============ */
+  header.marquee{
+    text-align:center;
+    padding:0 0 8px;
+  }
+  .awning{
+    height:20px;
+    background:repeating-linear-gradient(90deg,
+      var(--rose) 0 28px, var(--card) 28px 56px,
+      var(--mint) 56px 84px, var(--card) 84px 112px,
+      var(--butter) 112px 140px, var(--card) 140px 168px,
+      var(--sky) 168px 196px, var(--card) 196px 224px);
+    border-bottom:3px solid var(--ink);
+  }
+  .scallop{
+    height:14px;
+    background:radial-gradient(circle at 14px -2px, var(--rose) 12px, transparent 13px);
+    background-size:28px 14px;
+    background-repeat:repeat-x;
+  }
+  header.marquee .inner{padding:34px 16px 10px}
+  .school-badge{
+    display:inline-flex;align-items:center;gap:14px;
+    background:var(--card);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:10px 30px;
+    box-shadow:var(--shadow);
+  }
+  .school-badge .emoji{font-size:2rem}
+  header h1{
+    font-size:clamp(2rem, 6vw, 3.1rem);
+    font-weight:600;
+    letter-spacing:.5px;
+  }
+  header .slogan{
+    margin:16px auto 0;
+    font-family:"Fredoka","Atkinson Hyperlegible",sans-serif;
+    font-size:1.35rem;
+    font-weight:500;
+    letter-spacing:.02em;
+    color:var(--ink);
+  }
+  header .tagline{
+    margin:8px auto 0;
+    max-width:34rem;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+  }
+  .star-bank{
+    margin:18px auto 0;
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--butter);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:8px 22px;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.25rem;
+    font-weight:600;
+    color:var(--ink-on-pastel);
+  }
+
+  /* ============ ESTAÇÕES (abas gigantes) ============ */
+  nav.stations{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin:30px 0 26px;
+  }
+  .station-btn{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    min-height:118px;
+    padding:16px 10px;
+    border-radius:var(--radius);
+    border:3px solid var(--ink);
+    background:var(--card);
+    box-shadow:var(--shadow);
+    font-family:"Fredoka",sans-serif;
+    font-size:1.12rem;
+    font-weight:600;
+    color:var(--ink);
+    transition:transform .12s ease;
+  }
+  .station-btn .pic{font-size:2.1rem}
+  .station-btn[aria-selected="true"]{transform:translateY(3px);box-shadow:0 1px 0 rgba(70,50,63,.10)}
+  .station-btn[data-tone="rose"][aria-selected="true"]{background:var(--rose);color:var(--ink-on-pastel)}
+  .station-btn[data-tone="mint"][aria-selected="true"]{background:var(--mint);color:var(--ink-on-pastel)}
+  .station-btn[data-tone="sky"][aria-selected="true"]{background:var(--sky);color:var(--ink-on-pastel)}
+  @media (hover:hover){ .station-btn:hover{transform:translateY(-2px)} .station-btn[aria-selected="true"]:hover{transform:translateY(3px)} }
+
+  /* ============ PALCO ============ */
+  section.stage{
+    background:var(--card);
+    border:3px solid var(--ink);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    padding:28px clamp(16px,4vw,40px) 36px;
+  }
+  .stage[hidden]{display:none}
+  .stage-head{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;
+    text-align:center;
+    margin-bottom:8px;
+  }
+  .stage-head h2{font-size:clamp(1.5rem,4.5vw,2rem);font-weight:600}
+  .listen{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--sky);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    min-height:56px;
+    padding:8px 20px;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.05rem;font-weight:600;
+  }
+  .instruction{
+    text-align:center;
+    max-width:36rem;
+    margin:6px auto 22px;
+    color:var(--ink-soft);
+    font-size:1.08rem;
+  }
+
+  /* mensagem de retorno (feedback) */
+  .coach{
+    min-height:64px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    text-align:center;
+    background:var(--card-soft);
+    border:3px dashed var(--line);
+    border-radius:18px;
+    padding:10px 18px;
+    margin:20px auto 0;
+    max-width:40rem;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.15rem;
+    font-weight:500;
+  }
+  .coach.good{background:var(--mint);border-style:solid;border-color:var(--ink);color:var(--ink-on-pastel)}
+  .coach.hint{background:var(--butter);border-style:solid;border-color:var(--ink);color:var(--ink-on-pastel)}
+
+  /* botão de ação primário */
+  .big-action{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    min-height:72px;min-width:220px;
+    padding:12px 30px;
+    border-radius:999px;
+    border:3px solid var(--ink);
+    background:var(--rose);
+    font-family:"Fredoka",sans-serif;
+    font-size:1.3rem;font-weight:600;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  .big-action:active{transform:translateY(3px)}
+  .actions{display:flex;justify-content:center;margin-top:22px}
+
+  /* ============ ESTAÇÃO 1 · FÁBRICA ============ */
+  .target-panel{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px;
+    margin-bottom:24px;
+  }
+  .target-label{font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.2rem}
+  .digit-cards{display:flex;gap:10px}
+  .digit{
+    width:78px;height:96px;
+    display:grid;place-items:center;
+    border:3px solid var(--ink);
+    border-radius:18px;
+    font-family:"Fredoka",sans-serif;
+    font-size:2.6rem;font-weight:600;
+    color:var(--ink-on-pastel);
+    font-variant-numeric:tabular-nums;
+  }
+  .digit.h{background:var(--rose)}
+  .digit.t{background:var(--mint)}
+  .digit.o{background:var(--butter)}
+  .digit-caption{display:flex;gap:10px;margin-top:6px}
+  .digit-caption span{
+    width:78px;text-align:center;
+    font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;
+  }
+
+  .machines{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .machine{
+    background:var(--card-soft);
+    border:3px solid var(--ink);
+    border-radius:var(--radius);
+    padding:16px 12px 18px;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+  }
+  .machine h3{font-size:1.15rem;font-weight:600}
+  .machine .worth{
+    font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;
+  }
+  .machine .btn-row{display:flex;gap:12px}
+  .pm{
+    width:76px;height:76px;
+    border-radius:22px;
+    border:3px solid var(--ink);
+    font-family:"Fredoka",sans-serif;
+    font-size:2.2rem;font-weight:600;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease;
+    display:grid;place-items:center;
+  }
+  .pm:active{transform:translateY(3px)}
+  .machine[data-place="h"] .pm.add{background:var(--rose)}
+  .machine[data-place="t"] .pm.add{background:var(--mint)}
+  .machine[data-place="o"] .pm.add{background:var(--butter)}
+  .pm.sub{background:var(--card)}
+  .pm:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  .machine .count{
+    font-family:"Fredoka",sans-serif;
+    font-size:1.5rem;font-weight:600;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* blocos do material dourado em CSS */
+  .tray{
+    margin-top:20px;
+    background:var(--card-soft);
+    border:3px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    display:flex;flex-direction:column;gap:14px;
+  }
+  .shelf{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;min-height:26px}
+  .blk{border:2px solid var(--ink);border-radius:4px}
+  .blk.placa{
+    width:64px;height:64px;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 5.5px, rgba(70,50,63,.35) 5.5px 6.4px),
+      repeating-linear-gradient(90deg, transparent 0 5.5px, rgba(70,50,63,.35) 5.5px 6.4px),
+      var(--rose);
+  }
+  .blk.barra{
+    width:15px;height:64px;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 5.5px, rgba(70,50,63,.35) 5.5px 6.4px),
+      var(--mint);
+  }
+  .blk.cubinho{width:17px;height:17px;background:var(--butter)}
+
+  .equation{
+    margin-top:20px;
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;
+    font-family:"Fredoka",sans-serif;
+    font-size:clamp(1.4rem,4.5vw,2rem);
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+  }
+  .equation .part{
+    padding:6px 16px;border-radius:14px;border:3px solid var(--ink);
+    color:var(--ink-on-pastel);
+  }
+  .equation .part.h{background:var(--rose)}
+  .equation .part.t{background:var(--mint)}
+  .equation .part.o{background:var(--butter)}
+  .equation .total{
+    padding:6px 18px;border-radius:14px;
+    border:3px solid var(--ink);
+    background:var(--card);
+    color:var(--ink);
+    min-width:110px;text-align:center;
+  }
+
+  /* ============ ESTAÇÃO 2 · TREM ============ */
+  .train{
+    display:flex;align-items:flex-end;justify-content:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .loco{font-size:3rem;line-height:1;transform:scaleX(-1)}
+  .car{
+    min-width:104px;
+    padding:16px 8px 12px;
+    background:var(--card-soft);
+    border:3px solid var(--ink);
+    border-radius:16px 16px 8px 8px;
+    text-align:center;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.7rem;font-weight:600;
+    font-variant-numeric:tabular-nums;
+    position:relative;
+  }
+  .car::after{
+    content:"";
+    position:absolute;left:16px;right:16px;bottom:-13px;height:10px;
+    background:radial-gradient(circle 5px at 8px 5px, var(--ink) 4.4px, transparent 5px) left/50% 100% no-repeat,
+               radial-gradient(circle 5px at calc(100% - 8px) 5px, var(--ink) 4.4px, transparent 5px) right/50% 100% no-repeat;
+  }
+  .car.blank{background:var(--card);color:var(--ink-soft);border-style:dashed}
+  .car.next{border-style:solid;background:var(--butter);color:var(--ink-on-pastel);animation:pulse 1.6s ease-in-out infinite}
+  .car.done{background:var(--mint);color:var(--ink-on-pastel)}
+  @keyframes pulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+  .rule-badge{
+    display:flex;justify-content:center;margin:20px 0 6px;
+  }
+  .rule-badge span{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--sky);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:8px 24px;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.2rem;font-weight:600;
+    color:var(--ink-on-pastel);
+  }
+  .choices{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(120px,1fr));
+    gap:16px;
+    max-width:560px;
+    margin:18px auto 0;
+  }
+  .choice{
+    min-height:88px;
+    border-radius:var(--radius);
+    border:3px solid var(--ink);
+    background:var(--card-soft);
+    color:var(--ink);
+    font-family:"Fredoka",sans-serif;
+    font-size:2rem;font-weight:600;
+    font-variant-numeric:tabular-nums;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  .choice:active{transform:translateY(3px)}
+  @media (hover:hover){ .choice:hover{transform:translateY(-3px)} }
+
+  /* ============ ESTAÇÃO 3 · BALÕES ============ */
+  .balloon-sky{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .balloon{
+    aspect-ratio:1/1.12;
+    border-radius:50% 50% 46% 46%;
+    border:3px solid var(--ink);
+    display:grid;place-items:center;
+    font-family:"Fredoka",sans-serif;
+    font-size:clamp(1.3rem,3.6vw,1.8rem);
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink-on-pastel);
+    box-shadow:var(--shadow);
+    position:relative;
+    transition:transform .15s ease, opacity .3s ease;
+  }
+  .balloon::after{
+    content:"";
+    position:absolute;bottom:-16px;left:50%;
+    width:2.5px;height:16px;background:var(--ink);
+  }
+  .balloon:active{transform:translateY(3px)}
+  @media (hover:hover){ .balloon:hover{transform:translateY(-4px)} }
+  .balloon.rose{background:var(--rose)} .balloon.mint{background:var(--mint)}
+  .balloon.butter{background:var(--butter)} .balloon.sky{background:var(--sky)}
+  .balloon.gone{opacity:0;pointer-events:none;transform:scale(.4)}
+  .balloon.wrong{animation:wiggle .45s ease}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  .order-shelf{
+    margin:26px auto 0;
+    max-width:640px;
+    min-height:78px;
+    background:var(--card-soft);
+    border:3px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;
+  }
+  .order-shelf .slot{
+    min-width:86px;text-align:center;
+    padding:10px 8px;
+    border-radius:14px;
+    border:3px dashed var(--line);
+    color:var(--ink-soft);
+    font-family:"Fredoka",sans-serif;
+    font-size:1.3rem;font-weight:600;
+    font-variant-numeric:tabular-nums;
+  }
+  .order-shelf .slot.filled{border-style:solid;border-color:var(--ink);background:var(--mint);color:var(--ink-on-pastel)}
+
+  /* ============ GUIA DO EDUCADOR ============ */
+  details.guide{
+    margin-top:34px;
+    background:var(--card);
+    border:3px solid var(--ink);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  details.guide summary{
+    list-style:none;
+    cursor:pointer;
+    padding:20px 26px;
+    font-family:"Fredoka",sans-serif;
+    font-size:1.25rem;font-weight:600;
+    display:flex;align-items:center;gap:12px;
+  }
+  details.guide summary::-webkit-details-marker{display:none}
+  details.guide summary::after{content:"▾";margin-left:auto;transition:transform .2s}
+  details.guide[open] summary::after{transform:rotate(180deg)}
+  .guide-body{padding:0 26px 28px;max-width:62ch}
+  .guide-body h3{font-size:1.05rem;margin:20px 0 6px}
+  .guide-body ul{margin:6px 0;padding-left:22px}
+  .guide-body li{margin:6px 0}
+  .guide-body p{margin:8px 0}
+  .tone-chip{
+    display:inline-block;width:14px;height:14px;border-radius:4px;
+    border:2px solid var(--ink);vertical-align:-1px;margin-right:6px;
+  }
+
+  footer.credits{
+    text-align:center;
+    margin-top:30px;
+    color:var(--ink-soft);
+    font-size:.9rem;
+  }
+
+  /* confete */
+  .confetti-piece{
+    position:fixed;top:-20px;
+    width:12px;height:18px;border-radius:3px;
+    z-index:99;pointer-events:none;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{transform:translateY(105vh) rotate(540deg);opacity:.7}
+  }
+
+  @media (max-width:640px){
+    nav.stations{grid-template-columns:1fr}
+    .station-btn{flex-direction:row;justify-content:flex-start;padding-left:22px;min-height:84px}
+    .machines{grid-template-columns:1fr}
+    .balloon-sky{grid-template-columns:repeat(2,1fr)}
+    .choices{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+
+<header class="marquee">
+  <div class="awning" aria-hidden="true"></div>
+  <div class="scallop" aria-hidden="true"></div>
+  <div class="inner">
+    <div class="school-badge">
+      <span class="emoji" aria-hidden="true">🎪</span>
+      <h1>Descola</h1>
+      <span class="emoji" aria-hidden="true">🎈</span>
+    </div>
+    <p class="slogan">Aprender, brincar e descobrir.</p>
+    <p class="tagline">Três estações para brincar com centenas, dezenas e unidades — tudo com <strong>um toque só</strong>, no seu tempo, do seu jeito.</p>
+    <div class="star-bank" role="status" aria-live="polite">⭐ <span id="starLabel">0 estrelas</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="stations" role="tablist" aria-label="Estações de aprendizagem">
+    <button class="station-btn" role="tab" id="tab-fabrica" aria-controls="st-fabrica" aria-selected="true" data-tone="rose">
+      <span class="pic" aria-hidden="true">🏭</span> 1 · Fábrica de Números
+    </button>
+    <button class="station-btn" role="tab" id="tab-trem" aria-controls="st-trem" aria-selected="false" data-tone="mint">
+      <span class="pic" aria-hidden="true">🚂</span> 2 · Trem das Sequências
+    </button>
+    <button class="station-btn" role="tab" id="tab-baloes" aria-controls="st-baloes" aria-selected="false" data-tone="sky">
+      <span class="pic" aria-hidden="true">🎈</span> 3 · Festival dos Balões
+    </button>
+  </nav>
+
+  <!-- ============ ESTAÇÃO 1 ============ -->
+  <section class="stage" id="st-fabrica" role="tabpanel" aria-labelledby="tab-fabrica">
+    <div class="stage-head">
+      <h2>🏭 Fábrica de Números</h2>
+      <button class="listen" data-say="Bem-vindo à Fábrica de Números! Olhe o número mágico. Toque nos botões de mais para fabricar placas de cem, barras de dez e cubinhos de um, até formar o número. Se passar, toque no botão de menos. Sem pressa!">🔊 Ouvir</button>
+    </div>
+    <p class="instruction">Toque em <strong>➕</strong> para fabricar peças e montar o <strong>número mágico</strong>. Errou? O <strong>➖</strong> desfaz. Sem pressa!</p>
+
+    <div class="target-panel">
+      <span class="target-label">Número mágico:</span>
+      <div>
+        <div class="digit-cards" id="digitCards" aria-hidden="true"></div>
+        <div class="digit-caption"><span>centenas</span><span>dezenas</span><span>unidades</span></div>
+      </div>
+    </div>
+
+    <div class="machines">
+      <div class="machine" data-place="h">
+        <h3>🟥 Placa</h3>
+        <span class="worth">vale 100</span>
+        <div class="btn-row">
+          <button class="pm sub" data-p="h" data-d="-1" aria-label="Tirar uma placa de cem">➖</button>
+          <button class="pm add" data-p="h" data-d="1" aria-label="Colocar uma placa de cem">➕</button>
+        </div>
+        <span class="count" id="cnt-h" aria-live="polite">0</span>
+      </div>
+      <div class="machine" data-place="t">
+        <h3>🟩 Barra</h3>
+        <span class="worth">vale 10</span>
+        <div class="btn-row">
+          <button class="pm sub" data-p="t" data-d="-1" aria-label="Tirar uma barra de dez">➖</button>
+          <button class="pm add" data-p="t" data-d="1" aria-label="Colocar uma barra de dez">➕</button>
+        </div>
+        <span class="count" id="cnt-t" aria-live="polite">0</span>
+      </div>
+      <div class="machine" data-place="o">
+        <h3>🟨 Cubinho</h3>
+        <span class="worth">vale 1</span>
+        <div class="btn-row">
+          <button class="pm sub" data-p="o" data-d="-1" aria-label="Tirar um cubinho">➖</button>
+          <button class="pm add" data-p="o" data-d="1" aria-label="Colocar um cubinho">➕</button>
+        </div>
+        <span class="count" id="cnt-o" aria-live="polite">0</span>
+      </div>
+    </div>
+
+    <div class="tray" aria-hidden="true">
+      <div class="shelf" id="shelf-h"></div>
+      <div class="shelf" id="shelf-t"></div>
+      <div class="shelf" id="shelf-o"></div>
+    </div>
+
+    <div class="equation" aria-live="polite">
+      <span class="part h" id="eq-h">0</span><span>+</span>
+      <span class="part t" id="eq-t">0</span><span>+</span>
+      <span class="part o" id="eq-o">0</span><span>=</span>
+      <span class="total" id="eq-total">0</span>
+    </div>
+
+    <div class="coach" id="coach-1" aria-live="polite">Vamos montar o número! 💪</div>
+    <div class="actions"><button class="big-action" id="nextTarget" hidden>Próximo número ✨</button></div>
+  </section>
+
+  <!-- ============ ESTAÇÃO 2 ============ -->
+  <section class="stage" id="st-trem" role="tabpanel" aria-labelledby="tab-trem" hidden>
+    <div class="stage-head">
+      <h2>🚂 Trem das Sequências</h2>
+      <button class="listen" data-say="Todo trem tem um segredo: os números pulam sempre do mesmo jeito. Descubra o pulo e toque no número certo para encher o próximo vagão.">🔊 Ouvir</button>
+    </div>
+    <p class="instruction">Os números do trem <strong>pulam sempre do mesmo jeito</strong>. Descubra o pulo e toque no número do próximo vagão!</p>
+
+    <div class="train" id="train" aria-label="Vagões do trem"></div>
+    <div class="rule-badge"><span id="ruleBadge">🕵️ Qual é o pulo?</span></div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="coach" id="coach-2" aria-live="polite">Olhe bem os vagões cheios… qual é o segredo? 🔍</div>
+    <div class="actions"><button class="big-action" id="nextSeq" hidden>Próximo trem 🚂</button></div>
+  </section>
+
+  <!-- ============ ESTAÇÃO 3 ============ -->
+  <section class="stage" id="st-baloes" role="tabpanel" aria-labelledby="tab-baloes" hidden>
+    <div class="stage-head">
+      <h2>🎈 Festival dos Balões</h2>
+      <button class="listen" data-say="Os balões querem voar em fila, do maior número para o menor. Toque sempre no balão com o maior número que ainda está no céu.">🔊 Ouvir</button>
+    </div>
+    <p class="instruction">Toque sempre no balão com o <strong>MAIOR número</strong> que ainda está no céu. Eles vão formar uma fila do maior para o menor!</p>
+
+    <div class="balloon-sky" id="balloonSky"></div>
+    <div class="order-shelf" id="orderShelf" aria-label="Fila do maior para o menor" aria-live="polite"></div>
+
+    <div class="coach" id="coach-3" aria-live="polite">Qual balão tem o maior número? 👀</div>
+    <div class="actions"><button class="big-action" id="restartBalloons" hidden>Soltar balões de novo 🎈</button></div>
+  </section>
+
+  <!-- ============ GUIA DO EDUCADOR ============ -->
+  <details class="guide">
+    <summary>🍎 Guia do educador — como este modelo foi desenhado</summary>
+    <div class="guide-body">
+      <p>Esta experiência transpõe uma página de livro didático (composição e decomposição, sequências e ordem decrescente) para um ambiente digital pensado <strong>primeiro</strong> para crianças com dificuldades motoras.</p>
+
+      <h3>Objetivos de aprendizagem (BNCC · 2º ano)</h3>
+      <ul>
+        <li><strong>EF02MA01/EF02MA04</strong> — compor e decompor números de até três ordens com apoio de material dourado (Estação 1);</li>
+        <li><strong>EF02MA10</strong> — descrever e completar padrões de sequências recursivas (Estação 2);</li>
+        <li><strong>EF02MA01</strong> — comparar e ordenar números naturais (Estação 3).</li>
+      </ul>
+
+      <h3>Adaptações motoras — decisões de design</h3>
+      <ul>
+        <li><strong>Toque único, nunca arrastar:</strong> todas as tarefas que no papel pedem escrita ou no digital pedem "arrastar e soltar" viram um toque em um alvo grande;</li>
+        <li><strong>Alvos gigantes e espaçados:</strong> botões com no mínimo 72–88&nbsp;px e folga entre eles, reduzindo toques acidentais;</li>
+        <li><strong>Erro sempre reversível:</strong> o botão ➖ desfaz qualquer peça; nenhum erro trava ou pune;</li>
+        <li><strong>Sem tempo, sem placar de erros:</strong> só se contam as conquistas (estrelas);</li>
+        <li><strong>Teclado e varredura:</strong> tudo é operável por <kbd>Tab</kbd> + <kbd>Enter</kbd>, com foco bem visível — compatível com acionadores externos;</li>
+        <li><strong>Áudio de apoio:</strong> o botão 🔊 lê as instruções em voz alta e cada peça colocada é contada em voz alta ("uma placa, duas placas…"), na voz Luciana (padrão do Descola em aparelhos Apple; em outros aparelhos, a voz em português mais natural disponível);</li>
+        <li><strong>Movimento respeitoso:</strong> animações são desligadas automaticamente se o dispositivo estiver configurado para reduzir movimento.</li>
+      </ul>
+
+      <h3>Cores com significado</h3>
+      <p>
+        <span class="tone-chip" style="background:var(--rose)"></span>rosa = centenas (placas) ·
+        <span class="tone-chip" style="background:var(--mint)"></span>menta = dezenas (barras) ·
+        <span class="tone-chip" style="background:var(--butter)"></span>manteiga = unidades (cubinhos).
+        A mesma cor aparece no número, na peça e na equação, criando uma ponte visual constante entre símbolo e quantidade.
+      </p>
+
+      <h3>Sugestão de mediação</h3>
+      <ul>
+        <li>Comece pela Estação 1 com os números do livro (564 e 647) e peça para a criança narrar o que está fabricando;</li>
+        <li>Na Estação 2, pergunte "qual é o pulo?" antes de mostrar as opções;</li>
+        <li>Na Estação 3, incentive comparar primeiro as centenas: "seis-centos é maior que quatro-centos?";</li>
+        <li>Use as estrelas como registro de percurso, nunca como competição.</li>
+      </ul>
+    </div>
+  </details>
+
+  <footer class="credits">Descola · aprender, brincar e descobrir · um modelo de aprendizagem inclusivo 🧁</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- utilidades ---------- */
+  function $(id){ return document.getElementById(id); }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+  /* ---------- voz: Luciana por padrão; sem ela, a melhor pt-BR do aparelho ---------- */
+  var chosenVoice = null;
+
+  function scoreVoice(v){
+    var s = 0, n = v.name.toLowerCase();
+    if(/luciana/.test(n)) s += 200;                        // padrão do Descola
+    if(/pt[-_]br/i.test(v.lang)) s += 100;                 // Brasil antes de Portugal
+    if(n.indexOf("natural") > -1) s += 60;                 // vozes neurais do Edge
+    if(n.indexOf("google") > -1) s += 50;                  // voz neural do Chrome
+    if(/enhanced|premium|aprimorad/.test(n)) s += 40;      // vozes melhoradas da Apple
+    if(/francisca|thalita|camila|let[ií]cia|vit[óo]ria|maria/.test(n)) s += 10;
+    if(!v.localService) s += 5;                            // vozes de rede costumam ser melhores
+    return s;
+  }
+  function loadVoices(){
+    try{
+      if(!("speechSynthesis" in window)) return;
+      var voices = window.speechSynthesis.getVoices().filter(function(v){ return /^pt/i.test(v.lang); });
+      if(!voices.length) return;
+      voices.sort(function(a,b){ return scoreVoice(b) - scoreVoice(a); });
+      chosenVoice = voices[0];
+    }catch(e){}
+  }
+
+  function speak(text){
+    try{
+      if(!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      if(chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; }
+      else { u.lang = "pt-BR"; }
+      u.rate = 0.92;   /* um pouco mais devagar: mais claro para a criança */
+      u.pitch = 1.05;  /* tom levemente mais suave */
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  document.querySelectorAll(".listen").forEach(function(b){
+    b.addEventListener("click", function(){ speak(b.getAttribute("data-say")); });
+  });
+  (function initVoice(){
+    if(!("speechSynthesis" in window)) return;
+    loadVoices();
+    if(typeof window.speechSynthesis.addEventListener === "function"){
+      window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    } else {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  })();
+
+  var stars = 0;
+  function addStar(){
+    stars++;
+    $("starLabel").textContent = stars + (stars===1 ? " estrela" : " estrelas");
+  }
+
+  var PRAISES = ["Você conseguiu! 🌟","Que capricho! 🎉","Uau, mandou bem! 🥳","Perfeito! ✨","Isso mesmo! 🌈"];
+  function praise(){ return PRAISES[Math.floor(Math.random()*PRAISES.length)]; }
+
+  function confetti(){
+    if(reduceMotion) return;
+    var tones = ["#E9ADB6","#A9CDB8","#F3D489","#A9C7DE"];
+    for(var i=0;i<26;i++){
+      var p = document.createElement("div");
+      p.className = "confetti-piece";
+      p.style.left = (Math.random()*100)+"vw";
+      p.style.background = tones[i%4];
+      p.style.animationDuration = (1.8+Math.random()*1.6)+"s";
+      p.style.animationDelay = (Math.random()*0.4)+"s";
+      document.body.appendChild(p);
+      setTimeout(function(el){ return function(){ el.remove(); }; }(p), 4200);
+    }
+  }
+
+  /* ---------- abas / estações ---------- */
+  var tabs = document.querySelectorAll(".station-btn");
+  tabs.forEach(function(tab){
+    tab.addEventListener("click", function(){
+      tabs.forEach(function(t){
+        var on = t===tab;
+        t.setAttribute("aria-selected", on ? "true":"false");
+        $(t.getAttribute("aria-controls")).hidden = !on;
+      });
+    });
+  });
+
+  /* ================= ESTAÇÃO 1 · FÁBRICA ================= */
+  var NUM_F = ["nenhuma","uma","duas","três","quatro","cinco","seis","sete","oito","nove"];
+  var NUM_M = ["nenhum","um","dois","três","quatro","cinco","seis","sete","oito","nove"];
+  var PIECES = {
+    h:{sing:"placa",   plur:"placas",   fem:true},
+    t:{sing:"barra",   plur:"barras",   fem:true},
+    o:{sing:"cubinho", plur:"cubinhos", fem:false}
+  };
+  function countPhrase(p, n){
+    var piece = PIECES[p];
+    var word = (piece.fem ? NUM_F : NUM_M)[n];
+    return word + " " + (n<=1 ? piece.sing : piece.plur);
+  }
+  var targets = [564, 647, 382, 705, 230];
+  var tIndex = 0, target = targets[0];
+  var counts = {h:0,t:0,o:0};
+  var won1 = false;
+
+  function targetDigits(n){ return {h:Math.floor(n/100), t:Math.floor(n/10)%10, o:n%10}; }
+
+  function renderDigits(){
+    var d = targetDigits(target);
+    $("digitCards").innerHTML =
+      '<div class="digit h">'+d.h+'</div><div class="digit t">'+d.t+'</div><div class="digit o">'+d.o+'</div>';
+  }
+  function renderTray(){
+    function fill(shelfId, cls, n){
+      var s = $(shelfId); s.innerHTML = "";
+      for(var i=0;i<n;i++){ var b=document.createElement("div"); b.className="blk "+cls; s.appendChild(b); }
+    }
+    fill("shelf-h","placa",counts.h);
+    fill("shelf-t","barra",counts.t);
+    fill("shelf-o","cubinho",counts.o);
+  }
+  function renderFactory(){
+    $("cnt-h").textContent = counts.h;
+    $("cnt-t").textContent = counts.t;
+    $("cnt-o").textContent = counts.o;
+    $("eq-h").textContent = counts.h*100;
+    $("eq-t").textContent = counts.t*10;
+    $("eq-o").textContent = counts.o;
+    var total = counts.h*100 + counts.t*10 + counts.o;
+    $("eq-total").textContent = total;
+    renderTray();
+    document.querySelectorAll(".pm").forEach(function(b){
+      var p=b.getAttribute("data-p"), d=+b.getAttribute("data-d");
+      b.disabled = won1 || (d<0 && counts[p]===0) || (d>0 && counts[p]===9);
+    });
+    if(!won1 && total===target && total>0){
+      won1 = true;
+      var c=$("coach-1");
+      c.className="coach good";
+      c.textContent = praise()+" "+counts.h*100+" + "+counts.t*10+" + "+counts.o+" = "+target+"!";
+      speak("Parabéns! Você formou o número "+target+"!");
+      addStar(); confetti();
+      $("nextTarget").hidden = false;
+      document.querySelectorAll(".pm").forEach(function(b){ b.disabled = true; });
+      $("nextTarget").focus();
+    } else if(!won1){
+      var c1=$("coach-1");
+      c1.className="coach";
+      var diff = target-total;
+      if(total===0) c1.textContent = "Vamos montar o número "+target+"! 💪";
+      else if(diff>0) c1.textContent = "Já temos "+total+". Ainda faltam "+diff+"!";
+      else c1.textContent = "Opa, passou "+(-diff)+"! Toque no ➖ para tirar.";
+    }
+  }
+  document.querySelectorAll(".pm").forEach(function(b){
+    b.addEventListener("click", function(){
+      var p=b.getAttribute("data-p"), d=+b.getAttribute("data-d");
+      counts[p]=Math.max(0,Math.min(9,counts[p]+d));
+      renderFactory();
+      if(!won1) speak(countPhrase(p, counts[p]));
+    });
+  });
+  $("nextTarget").addEventListener("click", function(){
+    tIndex++;
+    target = tIndex < targets.length ? targets[tIndex] : (100+Math.floor(Math.random()*900));
+    counts={h:0,t:0,o:0}; won1=false;
+    $("nextTarget").hidden = true;
+    renderDigits(); renderFactory();
+    var c=$("coach-1"); c.className="coach"; c.textContent="Novo número mágico! Vamos lá! 🔮";
+    speak("Novo número mágico: "+target);
+  });
+  renderDigits(); renderFactory();
+
+  /* ================= ESTAÇÃO 2 · TREM ================= */
+  var sequences = [
+    {given:[100,200,300], step:100},
+    {given:[0,200,400],   step:200},
+    {given:[250,350,450], step:100},
+    {given:[500,600,700], step:100}
+  ];
+  var sIndex=0, filled=0, seqDone=false;
+
+  function seq(){ return sequences[sIndex % sequences.length]; }
+  function neededValue(){ var s=seq(); return s.given[s.given.length-1] + s.step*(filled+1); }
+
+  function renderTrain(){
+    var s=seq(), html='<span class="loco" aria-hidden="true">🚂</span>';
+    s.given.forEach(function(n){ html+='<div class="car done">'+n+'</div>'; });
+    for(var i=0;i<3;i++){
+      var v = s.given[s.given.length-1]+s.step*(i+1);
+      if(i<filled) html+='<div class="car done">'+v+'</div>';
+      else if(i===filled && !seqDone) html+='<div class="car blank next" aria-label="próximo vagão">?</div>';
+      else html+='<div class="car blank">?</div>';
+    }
+    $("train").innerHTML = html;
+    $("ruleBadge").textContent = seqDone ? ("🎉 O pulo era de "+s.step+" em "+s.step+"!") : "🕵️ Qual é o pulo?";
+  }
+  function renderChoices(){
+    var box=$("choices"); box.innerHTML="";
+    if(seqDone) return;
+    var correct=neededValue(), s=seq();
+    var pool=[correct, correct+s.step, Math.max(0,correct-s.step), correct+10, Math.max(0,correct-10), correct+50];
+    var opts=[correct];
+    for(var i=1;i<pool.length && opts.length<3;i++){ if(opts.indexOf(pool[i])===-1) opts.push(pool[i]); }
+    shuffle(opts);
+    opts.forEach(function(v){
+      var b=document.createElement("button");
+      b.className="choice"; b.textContent=v;
+      b.addEventListener("click", function(){
+        var c=$("coach-2");
+        if(v===correct){
+          filled++;
+          if(filled===3){
+            seqDone=true;
+            c.className="coach good";
+            c.textContent=praise()+" O pulo era de "+s.step+" em "+s.step+"!";
+            speak("Muito bem! O pulo era de "+s.step+" em "+s.step+"!");
+            addStar(); confetti();
+            $("nextSeq").hidden=false;
+            renderTrain(); renderChoices();
+            $("nextSeq").focus();
+          } else {
+            c.className="coach good";
+            c.textContent="Isso! Mais um vagão cheio! 🚃";
+            renderTrain(); renderChoices();
+          }
+        } else {
+          c.className="coach hint";
+          c.textContent="Quase! Olhe o pulo: os números vão de "+s.step+" em "+s.step+". Tente de novo!";
+          if(!reduceMotion){ b.classList.add("wrong"); setTimeout(function(){b.classList.remove("wrong");},500); }
+        }
+      });
+      box.appendChild(b);
+    });
+  }
+  $("nextSeq").addEventListener("click", function(){
+    sIndex++; filled=0; seqDone=false;
+    $("nextSeq").hidden=true;
+    var c=$("coach-2"); c.className="coach"; c.textContent="Trem novo, segredo novo! 🔍";
+    renderTrain(); renderChoices();
+  });
+  renderTrain(); renderChoices();
+
+  /* ================= ESTAÇÃO 3 · BALÕES ================= */
+  var balloonSets = [
+    [489,432,622,687,546,245,237,586],
+    [910,105,340,780,455,620,230,875]
+  ];
+  var bSet=0, remaining=[], placedCount=0, totalBalloons=0;
+  var tones3=["rose","mint","butter","sky"];
+
+  function renderShelfSlots(){
+    var shelf=$("orderShelf"); shelf.innerHTML="";
+    for(var i=0;i<totalBalloons;i++){
+      var s=document.createElement("div");
+      s.className="slot"; s.textContent="—"; s.id="slot-"+i;
+      shelf.appendChild(s);
+    }
+  }
+  function startBalloons(){
+    var nums = shuffle(balloonSets[bSet % balloonSets.length].slice());
+    remaining = nums.slice(); placedCount=0; totalBalloons=nums.length;
+    $("restartBalloons").hidden=true;
+    renderShelfSlots();
+    var skyBox=$("balloonSky"); skyBox.innerHTML="";
+    nums.forEach(function(n,i){
+      var b=document.createElement("button");
+      b.className="balloon "+tones3[i%4];
+      b.textContent=n;
+      b.setAttribute("aria-label","balão com o número "+n);
+      b.addEventListener("click", function(){ tapBalloon(n,b); });
+      skyBox.appendChild(b);
+    });
+    var c=$("coach-3"); c.className="coach"; c.textContent="Qual balão tem o maior número? 👀";
+  }
+  function tapBalloon(n, el){
+    var max=Math.max.apply(null, remaining);
+    var c=$("coach-3");
+    if(n===max){
+      remaining.splice(remaining.indexOf(n),1);
+      el.classList.add("gone");
+      el.disabled=true;
+      var slot=$("slot-"+placedCount);
+      slot.textContent=n; slot.classList.add("filled");
+      placedCount++;
+      if(remaining.length===0){
+        c.className="coach good";
+        c.textContent=praise()+" Fila completa, do maior para o menor!";
+        speak("Parabéns! Você colocou todos os balões em ordem decrescente!");
+        addStar(); confetti();
+        bSet++;
+        $("restartBalloons").hidden=false;
+        $("restartBalloons").focus();
+      } else {
+        c.className="coach good";
+        c.textContent="Boa! O "+n+" entrou na fila. Agora, qual é o maior? 🎈";
+      }
+    } else {
+      c.className="coach hint";
+      c.textContent="O "+n+" é grandão… mas tem um maior no céu! Compare as centenas. 🔍";
+      if(!reduceMotion){ el.classList.add("wrong"); setTimeout(function(){el.classList.remove("wrong");},500); }
+    }
+  }
+  $("restartBalloons").addEventListener("click", startBalloons);
+  startBalloons();
+})();
+</script>
